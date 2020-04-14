@@ -1,0 +1,37 @@
+{
+  "name": "@agencewebup/dkup",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:linux": "pkg index.js --targets linux --output dkup",
+    "build:mac": "pkg index.js --targets macos --output dkup"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agence-webup/dkup.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/agence-webup/dkup/issues"
+  },
+  "homepage": "https://github.com/agence-webup/dkup#readme",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.649.0",
+    "axios": "^0.19.2",
+    "cron": "^1.8.2",
+    "date-fns": "^2.11.1",
+    "minimist": "^1.2.5"
+  }
+}
