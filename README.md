@@ -30,10 +30,12 @@ You can find latest release here: https://github.com/agence-webup/dkup/releases
 
 * `slug` a string which will be used to store the file on s3
 * `path` path to the docker-compose + pliz project
-* `pingUrl` an URL to call when the backyp is done 
+* `pingUrl` an URL to call when the backup is done 
 * `frequency` a string which respect the following format `period:number_of_backups_to_keep`
   * `period`: hourly, daily, weekly or monthly
   * `number_of_backup`: a positive number
+
+Note: dkup will automatically detect https://healthchecks.io as a provider and enhance log with [errors](https://healthchecks.io/docs/attaching_logs/) (more providers coming soon)
 
 ## 3. Execute dkup
 
