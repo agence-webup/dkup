@@ -1,4 +1,4 @@
-# dkup
+# Dkup
 
 Dkup doesn't use any local database and automatically sync with your storage provider (S3 for now) to manage backups lifecycle.
 
