@@ -1,10 +1,10 @@
 # dkup
 
-## Step 1: download executable 
+## 1. Download executable 
 
 You can find latest release here: https://github.com/agence-webup/dkup/releases
 
-## Step 2: create a dkup.json config (for example in /etc/dkup)
+## 2. Create a dkup.json config (for example in /etc/dkup)
 
 ```json
 {
@@ -28,7 +28,7 @@ You can find latest release here: https://github.com/agence-webup/dkup/releases
 }
 ```
 
-## Step 3: execute dkup
+## 3. Execute dkup
 
 ```
 dkup /etc/dkup/dkup.json
