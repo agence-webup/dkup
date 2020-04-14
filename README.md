@@ -1,5 +1,7 @@
 # dkup
 
+Dkup doesn't use any local database and automatically sync with your storage provider (S3 for now) to manage backups lifecycle.
+
 ## 1. Download executable 
 
 You can find latest release here: https://github.com/agence-webup/dkup/releases
