@@ -46,3 +46,17 @@ You need to execute dkup every hour. An example with cron:
 ```
 @hourly dkup /etc/dkup/dkup.json
 ```
+
+Output example:
+
+```
+[05:04:47] projet1 | processing...
+[05:04:48] projet1 | prepare hourly
+[05:04:49] projet1 | run pliz backup command
+[05:04:49] projet1 | upload projet1-hourly-20200414_053148.tar.gz to s3
+[05:04:49] projet1 | delete projet1/projet1-hourly-20200414_035013.tar.gz from s3
+[05:04:50] projet2 | processing...
+[05:04:50] projet2 | prepare hourly
+[05:04:51] projet2 | run pliz backup command
+[05:04:51] projet2 | upload projet2-hourly-20200414_053150.tar.gz to s3
+```
