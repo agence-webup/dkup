@@ -28,6 +28,11 @@ You can find latest release here: https://github.com/agence-webup/dkup/releases
 }
 ```
 
+* `slug` a string which will be used to store the file on s3
+* `path` path to the docker-compose + pliz project
+* `pingUrl` an URL to call when the backyp is done 
+* `frequency`
+
 ## 3. Execute dkup
 
 ```
