@@ -1,5 +1,11 @@
 # dkup
 
+## Step 1: download executable 
+
+You can find latest release here: https://github.com/agence-webup/dkup/releases
+
+## Step 2: create a dkup.json config (for example in /etc/dkup)
+
 ```json
 {
   "awsAccessKeyId": "HERE_YOUR_AWS_ACCESS_KEY",
@@ -20,4 +26,10 @@
     }
   ]
 }
+```
+
+## Step 3: execute dkup
+
+```
+dkup /etc/dkup/dkup.json
 ```
