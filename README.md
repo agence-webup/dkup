@@ -41,6 +41,8 @@ Note: dkup will automatically detect https://healthchecks.io as a provider and e
 
 ## 3. Execute dkup
 
+You need to execute dkup every hour. An example with cron:
+
 ```
-dkup /etc/dkup/dkup.json
+@hourly dkup /etc/dkup/dkup.json
 ```
