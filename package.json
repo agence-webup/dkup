@@ -6,8 +6,10 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "build:linux": "pkg index.js --targets linux --output dkup",
-    "build:mac": "pkg index.js --targets macos --output dkup"
+    "build": "npm run build:linux && npm run build:macos && npm run build:alpine",
+    "build:linux": "pkg index.js --targets linux-x64 --output build/dkup_linux_x64",
+    "build:macos": "pkg index.js --targets macos-x64 --output build/dkup_macos_x64",
+    "build:alpine": "pkg index.js --targets alpine-x64 --output build/dkup_alpine_x64"
   },
   "repository": {
     "type": "git",
