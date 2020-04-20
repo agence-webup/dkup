@@ -6,7 +6,8 @@ const validPeriods = [
   constants.MONTHLY,
   constants.WEEKLY,
   constants.DAILY,
-  constants.HOURLY
+  constants.HOURLY,
+  constants.EVERY4HOURS
 ]
 
 module.exports = class Manager {
@@ -48,6 +49,14 @@ module.exports = class Manager {
           }
           break
         }
+
+        case constants.EVERY4HOURS: {
+          const lastBackupDate = this.extractLastBackup(this.parseFileList(filesList), constants.EVERY4HOURS)
+          if (lastBackupDate === null || datefns.differenceInHours(currentDate, lastBackupDate) >= 4) {
+            backupToDo.push(constants.EVERY4HOURS)
+          }
+          break
+        }
       }
     })
 
@@ -79,6 +88,11 @@ module.exports = class Manager {
 
           case constants.HOURLY: {
             toDelete = [...toDelete, ...this.extractFileToDelete(parsedFilesList, constants.HOURLY, limit)]
+            break
+          }
+
+          case constants.EVERY4HOURS: {
+            toDelete = [...toDelete, ...this.extractFileToDelete(parsedFilesList, constants.EVERY4HOURS, limit)]
             break
           }
         }
@@ -123,6 +137,7 @@ module.exports = class Manager {
 
     const result = {
       hourly: [],
+      every4hours: [],
       daily: [],
       weekly: [],
       monthly: []
