@@ -2,11 +2,14 @@ const constants = require('./constants')
 const datefns = require('date-fns')
 const p = require('path')
 
-module.exports = class Manager {
-  constructor (config) {
-    this.config = config
-  }
+const validPeriods = [
+  constants.MONTHLY,
+  constants.WEEKLY,
+  constants.DAILY,
+  constants.HOURLY
+]
 
+module.exports = class Manager {
   checkForBackup (project, filesList) {
     const backupToDo = []
     const currentDate = new Date()
@@ -16,14 +19,14 @@ module.exports = class Manager {
 
       switch (interval) {
         case constants.MONTHLY : {
-          const lastBackupDate = this.extractLastBackup(filesList, constants.MONTHLY)
+          const lastBackupDate = this.extractLastBackup(this.parseFileList(filesList), constants.MONTHLY)
           if (lastBackupDate === null || datefns.differenceInMonths(currentDate, lastBackupDate) >= 1) {
             backupToDo.push(constants.MONTHLY)
           }
           break
         }
         case constants.WEEKLY: {
-          const lastBackupDate = this.extractLastBackup(filesList, constants.WEEKLY)
+          const lastBackupDate = this.extractLastBackup(this.parseFileList(filesList), constants.WEEKLY)
           if (lastBackupDate === null || datefns.differenceInWeeks(currentDate, lastBackupDate) >= 1) {
             backupToDo.push(constants.WEEKLY)
           }
@@ -31,7 +34,7 @@ module.exports = class Manager {
         }
 
         case constants.DAILY: {
-          const lastBackupDate = this.extractLastBackup(filesList, constants.DAILY)
+          const lastBackupDate = this.extractLastBackup(this.parseFileList(filesList), constants.DAILY)
           if (lastBackupDate === null || datefns.differenceInDays(currentDate, lastBackupDate) >= 1) {
             backupToDo.push(constants.DAILY)
           }
@@ -39,7 +42,7 @@ module.exports = class Manager {
         }
 
         case constants.HOURLY: {
-          const lastBackupDate = this.extractLastBackup(filesList, constants.HOURLY)
+          const lastBackupDate = this.extractLastBackup(this.parseFileList(filesList), constants.HOURLY)
           if (lastBackupDate === null || datefns.differenceInHours(currentDate, lastBackupDate) >= 1) {
             backupToDo.push(constants.HOURLY)
           }
@@ -54,7 +57,6 @@ module.exports = class Manager {
   checkForBackupToDelete (project, filesList) {
     // classify filelist by period
     const parsedFilesList = this.parseFileList(filesList)
-
     let toDelete = []
     project.frequencies.forEach(frequency => {
       let [interval, limit] = frequency.split(':')
@@ -100,10 +102,9 @@ module.exports = class Manager {
     return filesToDelete
   }
 
-  extractLastBackup (filesList, period) {
-    const parsedFilesList = this.parseFileList(filesList)
-
-    if (parsedFilesList[period].length > 0) {
+  extractLastBackup (parsedFilesList, period) {
+    // TODO: reorder filename by date from S3 to be more robust
+    if (parsedFilesList[period] && parsedFilesList[period].length > 0) {
       // get most recent file
       const lastBackup = parsedFilesList[period][parsedFilesList[period].length - 1]
       const lastBackupDate = this.extractDateFromFilename(lastBackup)
@@ -132,7 +133,10 @@ module.exports = class Manager {
       filesList.sort(compareBydateAsc)
 
       filesList.forEach(file => {
-        result[this.extractPeriodFromFilename(file.Key)].push(file.Key)
+        const period = this.extractPeriodFromFilename(file.Key)
+        if (period !== null) {
+          result[period].push(file.Key)
+        }
       })
     }
 
@@ -142,11 +146,21 @@ module.exports = class Manager {
   extractDateFromFilename (filename) {
     const base = p.parse(filename).base.replace('.tar.gz', '')
     const date = base.split('-')[2]
-    return datefns.parse(date, 'yyyyMMdd_HHmmss', new Date())
+    const parsedDate = datefns.parse(date, 'yyyyMMdd_HHmmss', new Date())
+    if (datefns.isValid(parsedDate)) {
+      return parsedDate
+    } else {
+      return null
+    }
   }
 
   extractPeriodFromFilename (filename) {
     const base = p.parse(filename).base
-    return base.split('-')[1]
+    const period = base.split('-')[1]
+    if (validPeriods.includes(period)) {
+      return period
+    } else {
+      return null
+    }
   }
 }

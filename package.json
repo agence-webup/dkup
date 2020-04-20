@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "build:linux": "pkg index.js --targets linux --output dkup",
     "build:mac": "pkg index.js --targets macos --output dkup"
   },
@@ -25,7 +26,8 @@
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^25.4.0"
   },
   "dependencies": {
     "aws-sdk": "^2.649.0",
