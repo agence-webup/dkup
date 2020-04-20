@@ -72,6 +72,7 @@ try {
           }
         }
       } else {
+        https.get(project.pingUrl)
         helpers.info('no backup to perform', project.slug)
       }
     })
