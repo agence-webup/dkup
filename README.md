@@ -1,5 +1,7 @@
 # Dkup
 
+[![CircleCI](https://circleci.com/gh/agence-webup/dkup.svg?style=svg)](https://circleci.com/gh/agence-webup/dkup)
+
 Dkup doesn't use any local database and automatically sync with your storage provider (S3 for now) to manage backups lifecycle.
 
 ## 1. Download executable 
