@@ -44,7 +44,8 @@ module.exports = class Manager {
 
         case constants.HOURLY: {
           const lastBackupDate = this.extractLastBackup(this.parseFileList(filesList), constants.HOURLY)
-          if (lastBackupDate === null || datefns.differenceInHours(currentDate, lastBackupDate) >= 1) {
+          // we are not using exactly one hour as the script may be slightly shifted
+          if (lastBackupDate === null || datefns.differenceInMinutes(currentDate, lastBackupDate) >= 45) {
             backupToDo.push(constants.HOURLY)
           }
           break
@@ -52,7 +53,8 @@ module.exports = class Manager {
 
         case constants.EVERY4HOURS: {
           const lastBackupDate = this.extractLastBackup(this.parseFileList(filesList), constants.EVERY4HOURS)
-          if (lastBackupDate === null || datefns.differenceInHours(currentDate, lastBackupDate) >= 4) {
+          // we are not using exactly 4 hours as the script may be slightly shifted
+          if (lastBackupDate === null || datefns.differenceInMinutes(currentDate, lastBackupDate) >= 225) {
             backupToDo.push(constants.EVERY4HOURS)
           }
           break
