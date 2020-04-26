@@ -64,6 +64,10 @@ try {
             await s3.deleteFile(key)
           })
 
+          // delete local backup
+          helpers.info(`delete local file ${backup}`, slug)
+          fs.unlinkSync(backup)
+
           // ping URL
           https.get(project.pingUrl)
         } catch (error) {
