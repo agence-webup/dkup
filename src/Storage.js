@@ -15,17 +15,13 @@ module.exports = class Storage {
 
   uploadFile (path, folder, name) {
     return new Promise((resolve, reject) => {
-      fs.readFile(path, (err, data) => {
+      this.s3.upload({
+        Bucket: this.bucket,
+        Key: folder + '/' + name,
+        Body: fs.createReadStream(path)
+      }, (err, data) => {
         if (err) reject(err)
-
-        this.s3.putObject({
-          Bucket: this.bucket,
-          Key: folder + '/' + name,
-          Body: data
-        }, (err, data) => {
-          if (err) reject(err)
-          resolve(data)
-        })
+        resolve(data)
       })
     })
   }

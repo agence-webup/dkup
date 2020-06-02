@@ -50,8 +50,8 @@ try {
           // sync upload to spare network
           await helpers.asyncForEach(toProcess, async (frequency) => {
             const s3Filename = `${slug}-${frequency}-${formatedDate}.tar.gz`
-            await s3.uploadFile(backup, slug, s3Filename)
             helpers.info(`upload ${s3Filename} to s3`, slug)
+            await s3.uploadFile(backup, slug, s3Filename)
           })
 
           // clean old backups
