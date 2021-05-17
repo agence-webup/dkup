@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.649.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "cron": "^1.8.2",
     "date-fns": "^2.11.1",
     "minimist": "^1.2.5",
