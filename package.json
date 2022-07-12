@@ -23,17 +23,17 @@
   },
   "homepage": "https://github.com/agence-webup/dkup#readme",
   "devDependencies": {
-    "eslint": "^6.8.0",
-    "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.20.1",
-    "eslint-plugin-node": "^11.0.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1",
+    "eslint": "^8.17.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.2.1",
+    "eslint-plugin-promise": "^6.0.0",
     "jest": "^25.4.0"
   },
   "dependencies": {
     "aws-sdk": "^2.649.0",
     "axios": "^0.21.1",
+    "commander": "^9.3.0",
     "cron": "^1.8.2",
     "date-fns": "^2.11.1",
     "minimist": "^1.2.5",

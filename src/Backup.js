@@ -11,7 +11,6 @@ module.exports = class Backup {
         if (error) {
           reject(error)
         }
-
         // we can't handle error since mysql warning send an error
         // if (stderr) {
         //   reject(stderr)
@@ -22,5 +21,13 @@ module.exports = class Backup {
         resolve(p.join(path, fileName))
       })
     })
+  }
+
+  backupProject (projectName) {
+
+  }
+
+  backupAllProject () {
+
   }
 }
