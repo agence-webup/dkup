@@ -1,4 +1,5 @@
 const datefns = require('date-fns')
+const slug = require('slugify')
 
 async function asyncForEach (array, callback) {
   for (let index = 0; index < array.length; index++) {
@@ -14,7 +15,17 @@ function info (text, project = null) {
   }
 }
 
+function slugify (string) {
+  return slug(string, {
+    replacement: '_',
+    remove: /[*+~.()'"!:@-]/g,
+    lower: true,
+    strict: true
+  })
+}
+
 module.exports = {
-  asyncForEach: asyncForEach,
-  info: info
+  asyncForEach,
+  slugify,
+  info
 }

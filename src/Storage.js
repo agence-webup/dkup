@@ -5,8 +5,8 @@ module.exports = class Storage {
   constructor (accessKeyId, secretAccessKey, bucket) {
     this.bucket = bucket
     AWS.config.update({
-      accessKeyId: accessKeyId,
-      secretAccessKey: secretAccessKey,
+      accessKeyId,
+      secretAccessKey,
       bucket: this.bucket
     })
 

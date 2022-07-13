@@ -7,7 +7,8 @@ const validPeriods = [
   constants.WEEKLY,
   constants.DAILY,
   constants.HOURLY,
-  constants.EVERY4HOURS
+  constants.EVERY4HOURS,
+  constants.INSTANT
 ]
 
 module.exports = class Manager {
@@ -104,6 +105,12 @@ module.exports = class Manager {
     return toDelete
   }
 
+  checkInstantBackupToDelete (maxInstantBackup, filesList) {
+    const parsedFilesList = this.parseFileList(filesList)
+    const filesToDelete = this.extractFileToDelete(parsedFilesList, constants.INSTANT, maxInstantBackup)
+    return filesToDelete
+  }
+
   extractFileToDelete (list, interval, limit) {
     // no backup to process
     if (list[interval].length === 0) return []
@@ -142,7 +149,8 @@ module.exports = class Manager {
       every4hours: [],
       daily: [],
       weekly: [],
-      monthly: []
+      monthly: [],
+      instant: []
     }
 
     if (Array.isArray(filesList) && filesList.length > 0) {
@@ -173,7 +181,7 @@ module.exports = class Manager {
 
   extractPeriodFromFilename (filename) {
     const base = p.parse(filename).base
-    const period = base.split('-')[1]
+    const period = base.split('-').slice(-2)[0]
     if (validPeriods.includes(period)) {
       return period
     } else {

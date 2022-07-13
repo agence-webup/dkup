@@ -3,5 +3,6 @@ module.exports = Object.freeze({
   WEEKLY: 'weekly',
   DAILY: 'daily',
   HOURLY: 'hourly',
-  EVERY4HOURS: 'every4hours'
+  EVERY4HOURS: 'every4hours',
+  INSTANT: 'instant'
 })

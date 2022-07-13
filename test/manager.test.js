@@ -16,6 +16,8 @@ test('Period extraction from filename', () => {
   expect(manager.extractPeriodFromFilename('my_project-weekly-20200415_181502.tar.gz')).toBe('weekly')
   expect(manager.extractPeriodFromFilename('my_project-monthly-20200415_181502.tar.gz')).toBe('monthly')
   expect(manager.extractPeriodFromFilename('my_project-every4hours-20200415_181502.tar.gz')).toBe('every4hours')
+  expect(manager.extractPeriodFromFilename('my_project-instant-20200415_181502.tar.gz')).toBe('instant')
+  expect(manager.extractPeriodFromFilename('my-project-instant-20200415_181502.tar.gz')).toBe('instant')
   expect(manager.extractPeriodFromFilename('my_project-badperiod-20200415_181502.tar.gz')).toBe(null)
   expect(manager.extractPeriodFromFilename('my-project-badperiod-20200415_181502.tar.gz')).toBe(null)
   expect(manager.extractPeriodFromFilename('badfilename')).toBe(null)
