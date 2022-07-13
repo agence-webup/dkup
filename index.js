@@ -11,7 +11,6 @@ const Storage = require('./src/Storage')
 const Manager = require('./src/Manager')
 const ConfigReader = require('./src/ConfigReader')
 const helpers = require('./src/helpers')
-const argv = require('minimist')(process.argv.slice(2))
 
 const INSTANT_TO_KEEP = 5
 
@@ -23,29 +22,45 @@ program
 
 program.command('now [project]')
   .description('start an immediate backup')
-  .action((project) => {
+  .action(async (project) => {
     const config = ConfigReader.getConfig(program.opts().config)
-    const manager = new Manager()
-
-    helpers.asyncForEach(config.projects, async (project) => {
-      await handleProject(project, config)
-    })
-
-    // const limit = options.first ? 1 : undefined
-    // console.log(str.split(options.separator, limit))
+    if (project) {
+      const index = config.projects.findIndex(o => o.slug === project)
+      // if project exist in config
+      if (index !== -1) {
+        await handleProject(config.projects[index], config)
+      } else {
+        program.error(`${project} doesn't exist in config file`)
+      }
+    } else {
+      helpers.asyncForEach(config.projects, async (project) => {
+        await handleProject(project, config)
+      })
+    }
   })
 
-program.command('schedule [project]')
+program.command('schedule')
   .description('check and execute backup based on frequencies')
-  .action((project) => {
-    // program.opts().config
-
-    // const limit = options.first ? 1 : undefined
-    // console.log(str.split(options.separator, limit))
+  .option('--test', 'run backup without upload / delete + verbose mode')
+  .action((options) => {
+    const config = ConfigReader.getConfig(program.opts().config)
+    const s3 = new Storage(config.awsAccessKeyId, config.awsSecretAccessKey, config.awsBucket)
+    const manager = new Manager(config)
+    helpers.asyncForEach(config.projects, async (project) => {
+      const slug = helpers.slugify(project.slug)
+      const filesList = await s3.listAllFilesForProject(slug)
+      const toProcess = manager.checkForBackup(project, filesList)
+      if (toProcess.length > 0) {
+        await handleProject(project, config, toProcess, options.test)
+      } else {
+        healthcheck(project.pingUrl)
+        helpers.info('No backup to perform', slug)
+      }
+    })
   })
 
 program.command('list')
-  .description('list all projects in config file')
+  .description('list all projects')
   .action(() => {
     const config = ConfigReader.getConfig(program.opts().config)
     config.projects.forEach(project => {
@@ -55,118 +70,97 @@ program.command('list')
 
 program.parse()
 
-async function handleProject (project, config) {
+async function healthcheck (pingUrl, error = null) {
+  if (error) {
+    if (new URL(pingUrl).hostname === 'hc-ping.com') {
+      axios({
+        method: 'post',
+        url: pingUrl + '/fail',
+        data: error
+      })
+    }
+  } else {
+    https.get(pingUrl)
+  }
+}
+async function handleProject (project, config, frequencies = null, testMode = false) {
   const formatedDate = datefns.format(new Date(), 'yyyyMMdd_HHmmss')
   const slug = helpers.slugify(project.slug)
   const filename = slug + '-' + formatedDate
-  const s3Filename = `${slug}-instant-${formatedDate}.tar.gz`
+
   const s3 = new Storage(config.awsAccessKeyId, config.awsSecretAccessKey, config.awsBucket)
-  helpers.info('processing instant backup...', slug)
+  const manager = new Manager()
+
   try {
+    // manage custom command
+    const command = project.command || config.command || null
+    if (command === null) throw new Error('No command specified')
+
+    if (testMode) helpers.info('### TEST MODE ###', slug)
+
     // run pliz backup
-    helpers.info('run pliz backup command', slug)
-    const backup = await Backup.exec(project.path, filename)
-    // upload to S3
-    helpers.info(`upload ${s3Filename} to s3`, slug)
-    await s3.uploadFile(backup, slug, s3Filename)
-    // clean old backups
-    const manager = new Manager()
-    const filesList = await s3.listAllFilesForProject(slug)
-    const instantToKeep = project.instantToKeep || config.instantToKeep || INSTANT_TO_KEEP
-    helpers.info(`number of instant backups to keep: ${instantToKeep}`, slug)
-    const toDelete = manager.checkInstantBackupToDelete(instantToKeep, filesList)
-    await helpers.asyncForEach(toDelete, async (key) => {
-      helpers.info(`delete ${key} from s3`, slug)
-      await s3.deleteFile(key)
-    })
-    // delete local backup
-    helpers.info(`delete local file ${backup}`, slug)
-    fs.unlinkSync(backup)
+    const backup = new Backup(filename, command, project.path)
+    helpers.info(`Run custom command -> ${backup.getCustomCommand()}`, slug)
+
+    const backupPath = await backup.exec()
+
+    // two cases to handle : instant or schedule backup
+    if (frequencies) {
+      helpers.info('Processing scheduled backup', slug)
+
+      // upload to S3 (one backup at a time)
+      await helpers.asyncForEach(frequencies, async (frequency) => {
+        const s3Filename = `${slug}-${frequency}-${formatedDate}.tar.gz`
+        helpers.info(`Upload ${s3Filename} to s3`, slug)
+        if (!testMode) {
+          await s3.uploadFile(backupPath, slug, s3Filename)
+        }
+      })
+
+      // clean old backups
+      const filesList = await s3.listAllFilesForProject(slug)
+      const toDelete = manager.checkForBackupToDelete(project, filesList)
+
+      // sync delete
+      await helpers.asyncForEach(toDelete, async (key) => {
+        helpers.info(`Delete ${key} from s3`, slug)
+        if (!testMode) {
+          await s3.deleteFile(key)
+        }
+      })
+
+      // delete local backup
+      helpers.info(`Delete local file ${backup}`, slug)
+      fs.unlinkSync(backupPath)
+
+      // ping healthcheck
+      healthcheck(project.pingUrl)
+    } else {
+      helpers.info('Processing instant backup...', slug)
+
+      // upload to S3
+      const s3Filename = `${slug}-instant-${formatedDate}.tar.gz`
+      helpers.info(`Upload ${s3Filename} to s3`, slug)
+      await s3.uploadFile(backupPath, slug, s3Filename)
+
+      // clean old backups
+      const filesList = await s3.listAllFilesForProject(slug)
+      const instantToKeep = project.instantToKeep || config.instantToKeep || INSTANT_TO_KEEP
+      helpers.info(`Number of instant backups to keep: ${instantToKeep}`, slug)
+      const toDelete = manager.checkInstantBackupToDelete(instantToKeep, filesList)
+      await helpers.asyncForEach(toDelete, async (key) => {
+        helpers.info(`Delete ${key} from s3`, slug)
+        await s3.deleteFile(key)
+      })
+      // delete local backup
+      helpers.info(`Delete local file ${backupPath}`, slug)
+      fs.unlinkSync(backupPath)
+
+      // ping healthcheck
+      healthcheck(project.pingUrl)
+    }
   } catch (error) {
-    console.log(error)
+    helpers.info(`Error: ${error.message}`, slug)
+    healthcheck(project.pingUrl, error.message)
   }
 }
-
-// get config path
-// try {
-//   const rawdata = fs.readFileSync(argv._[0])
-
-//   const config = JSON.parse(rawdata)
-//   const manager = new Manager(config)
-
-// ;(async function () {
-//   // iterate over all projects to backup
-//     helpers.asyncForEach(config.projects, async (project) => {
-//       const slug = slugify(project.slug, {
-//         replacement: '_',
-//         remove: /[*+~.()'"!:@-]/g,
-//         lower: true,
-//         strict: true
-//       })
-
-//       helpers.info('processing...', slug)
-
-//       // get all backups from S3
-//       const s3 = new Storage(config.awsAccessKeyId, config.awsSecretAccessKey, config.awsBucket)
-//       let filesList = await s3.listAllFilesForProject(slug)
-
-//       // check for backup
-//       const toProcess = manager.checkForBackup(project, filesList)
-
-//       if (toProcess.length > 0) {
-//         helpers.info(`prepare ${toProcess}`, slug)
-
-//         const formatedDate = datefns.format(new Date(), 'yyyyMMdd_HHmmss')
-//         const filename = slug + '-' + formatedDate
-
-//         // backup, upload to S3 and clean old backups
-//         try {
-//           const backup = await Backup.exec(project.path, filename)
-//           helpers.info('run pliz backup command', slug)
-
-//           // sync upload to spare network
-//           await helpers.asyncForEach(toProcess, async (frequency) => {
-//             const s3Filename = `${slug}-${frequency}-${formatedDate}.tar.gz`
-//             helpers.info(`upload ${s3Filename} to s3`, slug)
-//             await s3.uploadFile(backup, slug, s3Filename)
-//           })
-
-//           // clean old backups
-//           filesList = await s3.listAllFilesForProject(slug)
-//           const toDelete = manager.checkForBackupToDelete(project, filesList)
-
-//           // sync delete
-//           await helpers.asyncForEach(toDelete, async (key) => {
-//             helpers.info(`delete ${key} from s3`, slug)
-//             await s3.deleteFile(key)
-//           })
-
-//           // delete local backup
-//           helpers.info(`delete local file ${backup}`, slug)
-//           fs.unlinkSync(backup)
-
-//           // ping URL
-//           https.get(project.pingUrl)
-//         } catch (error) {
-//           console.error(error)
-
-//           // specific to provider(s)
-//           // healthchecks.io
-//           if (new URL(project.pingUrl).hostname === 'hc-ping.com') {
-//             axios({
-//               method: 'post',
-//               url: project.pingUrl + '/fail',
-//               data: error.message
-//             })
-//           }
-//         }
-//       } else {
-//         https.get(project.pingUrl)
-//         helpers.info('no backup to perform', slug)
-//       }
-//     })
-//   })()
-// } catch (err) {
-//   console.error('Unable to open config file')
-//   process.exit(1)
-// }

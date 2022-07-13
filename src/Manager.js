@@ -181,7 +181,7 @@ module.exports = class Manager {
 
   extractPeriodFromFilename (filename) {
     const base = p.parse(filename).base
-    const period = base.split('-')[1]
+    const period = base.split('-').slice(-2)[0]
     if (validPeriods.includes(period)) {
       return period
     } else {

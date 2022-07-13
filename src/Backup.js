@@ -2,12 +2,17 @@ const exec = require('child_process').exec
 const p = require('path')
 
 module.exports = class Backup {
-  static exec (path, outputName) {
-    return new Promise((resolve, reject) => {
-      const fileName = `${outputName}.tar.gz`
-      const command = `pliz backup -q --files --db -o ${fileName}`
+  constructor (fileName, command, path) {
+    this.fileName = `${fileName}.tar.gz`
+    this.command = command
+    this.path = path
+  }
 
-      exec(command, { cwd: path }, (error, stdout, stderr) => {
+  exec () {
+    return new Promise((resolve, reject) => {
+      const commandToRun = this.getCustomCommand()
+
+      exec(commandToRun, { cwd: this.path }, (error, stdout, stderr) => {
         if (error) {
           reject(error)
         }
@@ -18,16 +23,12 @@ module.exports = class Backup {
 
         // console.log(`stdout: ${stdout}`)
         // console.error(`stderr: ${stderr}`)
-        resolve(p.join(path, fileName))
+        resolve(p.join(this.path, this.fileName))
       })
     })
   }
 
-  backupProject (projectName) {
-
-  }
-
-  backupAllProject () {
-
+  getCustomCommand () {
+    return `${this.command.replace('@FILENAME', this.fileName)}`
   }
 }
