@@ -103,13 +103,19 @@ dkup --version
 ## 5. Output example
 
 ```
-[05:04:47] projet1 | processing...
-[05:04:48] projet1 | prepare hourly
-[05:04:49] projet1 | run pliz backup command
-[05:04:49] projet1 | upload projet1-hourly-20200414_053148.tar.gz to s3
-[05:04:49] projet1 | delete projet1/projet1-hourly-20200414_035013.tar.gz from s3
-[05:04:50] projet2 | processing...
-[05:04:50] projet2 | prepare hourly
-[05:04:51] projet2 | run pliz backup command
-[05:04:51] projet2 | upload projet2-hourly-20200414_053150.tar.gz to s3
+[18:07:32] projet1 | Run custom command -> pliz backup -q --files --db -o projet1-20220713_182532.tar.gz
+[18:07:32] projet1 | Processing scheduled backup
+[18:07:32] projet1 | Upload projet1-monthly-20220713_182532.tar.gz to s3
+[18:07:33] projet1 | Upload projet1-weekly-20220713_182532.tar.gz to s3
+[18:07:33] projet1 | Upload projet1-daily-20220713_182532.tar.gz to s3
+[18:07:33] projet1 | Upload projet1-hourly-20220713_182532.tar.gz to s3
+[18:07:33] projet1 | Upload projet1-every4hours-20220713_182532.tar.gz to s3
+[18:07:33] projet1 | Delete local file /projects/projet1-20220713_182532.tar.gz
+[18:07:33] projet2 | Run custom command -> pliz backup -q --files --db -o projet2-20220713_182533.tar.gz
+[18:07:34] projet2 | Processing scheduled backup
+[18:07:34] projet2 | Upload projet2-monthly-20220713_182533.tar.gz to s3
+[18:07:34] projet2 | Upload projet2-weekly-20220713_182533.tar.gz to s3
+[18:07:34] projet2 | Upload projet2-daily-20220713_182533.tar.gz to s3
+[18:07:34] projet2 | Upload projet2-hourly-20220713_182533.tar.gz to s3
+[18:07:35] projet2 | Delete local file /projects/projet2-20220713_182533.tar.gz
 ```
