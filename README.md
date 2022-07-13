@@ -90,7 +90,9 @@ You need to execute dkup every hour. An example with cron:
  
 ### Test schedule backups (without upload or delete + verbose mode)
 
+```
 dkup --config /etc/dkup/dkup.json schedule --test
+```
 
 ### Check version
 
