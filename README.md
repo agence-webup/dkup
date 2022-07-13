@@ -45,7 +45,7 @@ You can find latest release here: https://github.com/agence-webup/dkup/releases
 * `instantToKeep`: number of instant backups to keep (global or per project option), default is 5
 * `command`: command used to backup (global or per project option), @FILENAME is replaced with backup filenam
 
-Note: dkup will automatically detect https://healthchecks.io as a provider and enhance log with [errors](https://healthchecks.io/docs/attaching_logs/) (more providers coming soon)
+Note: dkup will automatically detect https://healthchecks.io as a provider and enhance log with [errors](https://healthchecks.io/docs/attaching_logs/)
 
 ## 3. Execute dkup
 
@@ -80,7 +80,7 @@ dkup --config /etc/dkup/dkup.json now
 dkup --config /etc/dkup/dkup.json now project1
 ```
 
-### Check and execute schedule backups
+### Check and execute scheduled backups
 
 You need to execute dkup every hour. An example with cron:
 
@@ -88,7 +88,7 @@ You need to execute dkup every hour. An example with cron:
 @hourly dkup --config /etc/dkup/dkup.json schedule
 ```
  
-### Test schedule backups (without upload or delete + verbose mode)
+### Test scheduled backups (without upload or delete + verbose mode)
 
 ```
 dkup --config /etc/dkup/dkup.json schedule --test
