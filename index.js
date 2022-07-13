@@ -130,7 +130,7 @@ async function handleProject (project, config, frequencies = null, testMode = fa
       })
 
       // delete local backup
-      helpers.info(`Delete local file ${backup}`, slug)
+      helpers.info(`Delete local file ${backupPath}`, slug)
       fs.unlinkSync(backupPath)
 
       // ping healthcheck
