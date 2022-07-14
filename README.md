@@ -43,7 +43,7 @@ You can find latest release here: https://github.com/agence-webup/dkup/releases
   * `period`: hourly, every4hours, daily, weekly or monthly
   * `number_of_backup`: the number of backup files to keep for the period (1 will keep one backup file, 3 will keep three backup files, 0 for no limit)
 * `instantToKeep`: number of instant backups to keep (global or per project option), default is 5
-* `command`: command used to backup (global or per project option), @FILENAME is replaced with backup filenam
+* `command`: command used to backup (global or per project option), @FILENAME is replaced with backup filename
 
 Note: dkup will automatically detect https://healthchecks.io as a provider and enhance log with [errors](https://healthchecks.io/docs/attaching_logs/)
 
@@ -94,7 +94,7 @@ You need to execute dkup every hour. An example with cron:
 dkup --config /etc/dkup/dkup.json schedule --test
 ```
 
-### Check version
+### Display version
 
 ```
 dkup --version
