@@ -16,6 +16,7 @@ You can find latest release here: https://github.com/agence-webup/dkup/releases
   "awsSecretAccessKey": "HERE_YOUR_AWS_SECRET",
   "awsBucket": "HERE_YOUR_AWS_BUCKET",
   "command": "pliz backup -q --files --db -o @FILENAME",
+  "fileExtension": "zip",
   "instantToKeep": 3,
   "projects": [
     {
@@ -43,7 +44,8 @@ You can find latest release here: https://github.com/agence-webup/dkup/releases
   * `period`: hourly, every4hours, daily, weekly or monthly
   * `number_of_backup`: the number of backup files to keep for the period (1 will keep one backup file, 3 will keep three backup files, 0 for no limit)
 * `instantToKeep`: number of instant backups to keep (global or per project option), default is 5
-* `command`: command used to backup (global or per project option), @FILENAME is replaced with backup filename
+* `fileExtension` : extension to use (global or per project option), default set to tar.gz
+* `command`: command used to backup (global or per project option), @FILENAME is replaced with backup filenam
 
 Note: dkup will automatically detect https://healthchecks.io as a provider and enhance log with [errors](https://healthchecks.io/docs/attaching_logs/)
 

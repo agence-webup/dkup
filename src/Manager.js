@@ -169,8 +169,9 @@ module.exports = class Manager {
   }
 
   extractDateFromFilename (filename) {
-    const base = p.parse(filename).base.replace('.tar.gz', '')
-    const date = base.split('-')[2]
+    const base = p.parse(filename).base
+    // extract date and remove everything after first dot
+    const date = base.split('.')[0].split('-')[2]
     const parsedDate = datefns.parse(date, 'yyyyMMdd_HHmmss', new Date())
     if (datefns.isValid(parsedDate)) {
       return parsedDate
@@ -182,6 +183,7 @@ module.exports = class Manager {
   extractPeriodFromFilename (filename) {
     const base = p.parse(filename).base
     const period = base.split('-').slice(-2)[0]
+
     if (validPeriods.includes(period)) {
       return period
     } else {

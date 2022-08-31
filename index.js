@@ -13,6 +13,7 @@ const ConfigReader = require('./src/ConfigReader')
 const helpers = require('./src/helpers')
 
 const INSTANT_TO_KEEP = 5
+const FILE_EXTENSION = 'tar.gz'
 
 program
   .name('dkup')
@@ -86,6 +87,7 @@ async function healthcheck (pingUrl, error = null) {
 async function handleProject (project, config, frequencies = null, testMode = false) {
   const formatedDate = datefns.format(new Date(), 'yyyyMMdd_HHmmss')
   const slug = helpers.slugify(project.slug)
+  const fileExtension = project.fileExtension || config.fileExtension || FILE_EXTENSION
   const filename = slug + '-' + formatedDate
 
   const s3 = new Storage(config.awsAccessKeyId, config.awsSecretAccessKey, config.awsBucket)
@@ -110,7 +112,7 @@ async function handleProject (project, config, frequencies = null, testMode = fa
 
       // upload to S3 (one backup at a time)
       await helpers.asyncForEach(frequencies, async (frequency) => {
-        const s3Filename = `${slug}-${frequency}-${formatedDate}.tar.gz`
+        const s3Filename = `${slug}-${frequency}-${formatedDate}.${fileExtension}`
         helpers.info(`Upload ${s3Filename} to s3`, slug)
         if (!testMode) {
           await s3.uploadFile(backupPath, slug, s3Filename)
@@ -139,7 +141,7 @@ async function handleProject (project, config, frequencies = null, testMode = fa
       helpers.info('Processing instant backup...', slug)
 
       // upload to S3
-      const s3Filename = `${slug}-instant-${formatedDate}.tar.gz`
+      const s3Filename = `${slug}-instant-${formatedDate}.${fileExtension}`
       helpers.info(`Upload ${s3Filename} to s3`, slug)
       await s3.uploadFile(backupPath, slug, s3Filename)
 

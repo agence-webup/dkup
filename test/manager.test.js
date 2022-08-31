@@ -4,6 +4,8 @@ const datefns = require('date-fns')
 test('Date extraction from filename', () => {
   const manager = new Manager()
   expect(datefns.isEqual(manager.extractDateFromFilename('my_project-daily-20200415_181502.tar.gz'), datefns.parse('20200415_181502', 'yyyyMMdd_HHmmss', new Date()))).toBe(true)
+  expect(datefns.isEqual(manager.extractDateFromFilename('my_project-daily-20200415_181502.zip'), datefns.parse('20200415_181502', 'yyyyMMdd_HHmmss', new Date()))).toBe(true)
+  expect(datefns.isEqual(manager.extractDateFromFilename('my_project-daily-20200415_181502.tar.gz.enc'), datefns.parse('20200415_181502', 'yyyyMMdd_HHmmss', new Date()))).toBe(true)
   expect(datefns.isEqual(manager.extractDateFromFilename('my_project-daily-20200415_181502'), datefns.parse('20200415_181502', 'yyyyMMdd_HHmmss', new Date()))).toBe(true)
   expect(manager.extractDateFromFilename('my-project-daily-20200415_181502.tar.gz')).toBe(null)
   expect(manager.extractDateFromFilename('badfilename')).toBe(null)
@@ -12,7 +14,9 @@ test('Date extraction from filename', () => {
 test('Period extraction from filename', () => {
   const manager = new Manager()
   expect(manager.extractPeriodFromFilename('my_project-hourly-20200415_181502.tar.gz')).toBe('hourly')
+  expect(manager.extractPeriodFromFilename('my_project-hourly-20200415_181502.zip')).toBe('hourly')
   expect(manager.extractPeriodFromFilename('my_project-daily-20200415_181502.tar.gz')).toBe('daily')
+  expect(manager.extractPeriodFromFilename('my_project-daily-20200415_181502.zip')).toBe('daily')
   expect(manager.extractPeriodFromFilename('my_project-weekly-20200415_181502.tar.gz')).toBe('weekly')
   expect(manager.extractPeriodFromFilename('my_project-monthly-20200415_181502.tar.gz')).toBe('monthly')
   expect(manager.extractPeriodFromFilename('my_project-every4hours-20200415_181502.tar.gz')).toBe('every4hours')
