@@ -45,7 +45,7 @@ You can find latest release here: https://github.com/agence-webup/dkup/releases
   * `number_of_backup`: the number of backup files to keep for the period (1 will keep one backup file, 3 will keep three backup files, 0 for no limit)
 * `instantToKeep`: number of instant backups to keep (global or per project option), default is 5
 * `fileExtension` : extension to use (global or per project option), default set to tar.gz
-* `command`: command used to backup (global or per project option), @FILENAME is replaced with backup filenam
+* `command`: command used to backup (global or per project option), @FILENAME is replaced with backup filename
 
 Note: dkup will automatically detect https://healthchecks.io as a provider and enhance log with [errors](https://healthchecks.io/docs/attaching_logs/)
 
